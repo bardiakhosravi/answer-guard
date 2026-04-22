@@ -34,6 +34,8 @@ Detailed rules: `.claude/rules/tenets-*.md`
 ## Active Technologies
 - Python 3.11+ (backend API + BigQuery connector), TypeScript 5.x (SDK) + FastAPI, SQLAlchemy 2.0 (sync), Alembic, `google-cloud-bigquery`, `pydantic` (001-qa-response-ingestion)
 - PostgreSQL (production), SQLite (local dev) — same schema via SQLAlchemy dialects (001-qa-response-ingestion)
+- Docusaurus v3 (TypeScript, classic preset), GitHub Pages, GitHub Actions (002-developer-docs)
 
 ## Recent Changes
 - 001-qa-response-ingestion: Added Python 3.11+ (backend API + BigQuery connector), TypeScript 5.x (SDK) + FastAPI, SQLAlchemy 2.0 (sync), Alembic, `google-cloud-bigquery`, `pydantic`
+- 002-developer-docs: Added Docusaurus v3 (TypeScript) + GitHub Pages deployment via GitHub Actions

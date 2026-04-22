@@ -2,12 +2,12 @@ services:
   api:
     build: .
     ports:
-      - "8080:8080"
+      - "8000:8080"
     environment:
       - DATABASE_URL=postgresql://answerguard:answerguard@db:5432/answerguard
-      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
-      - GOOGLE_APPLICATION_CREDENTIALS=/secrets/gcp-key.json
-      - BIGQUERY_PAGE_SIZE=5000
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID:-}
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}
+      - BIGQUERY_PAGE_SIZE=${BIGQUERY_PAGE_SIZE:-5000}
     volumes:
       - ${GOOGLE_APPLICATION_CREDENTIALS:-/dev/null}:/secrets/gcp-key.json:ro
     depends_on:
