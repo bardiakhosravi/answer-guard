@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 2,
+  "tools": {
+    "claude": {
+      "targetFile": "CLAUDE.md",
+      "contentHash": "3737f48d670376117dbd6005d9807c2514124697d650b6befc55a88c76da21af",
+      "mode": "multi",
+      "installedAt": "2026-04-12T18:34:22.702Z",
+      "updatedAt": "2026-04-12T18:34:22.702Z"
+    }
+  },
+  "speckit": {
+    "tenets-ddd": {
+      "installedAt": "2026-04-12T18:34:16.374Z",
+      "updatedAt": "2026-04-12T18:34:16.374Z"
+    }
+  }
+}

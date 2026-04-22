@@ -1,0 +1,10 @@
+{
+  "presets": [
+    {
+      "id": "tenets-ddd",
+      "priority": 10,
+      "installedAt": "2026-04-12T18:34:16.374Z",
+      "source": "tenets"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+.coverage
+coverage.xml
+htmlcov/
+
+# Node / TypeScript
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+.turbo/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Database
+*.db
+*.sqlite
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Alembic
+alembic/versions/*.pyc
+
+# Logs
+*.log
