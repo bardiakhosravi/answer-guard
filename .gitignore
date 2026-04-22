@@ -47,5 +47,11 @@ Thumbs.db
 # Alembic
 alembic/versions/*.pyc
 
+# Docusaurus
+website/node_modules/
+website/build/
+website/.docusaurus/
+website/.cache-loader/
+
 # Logs
 *.log
