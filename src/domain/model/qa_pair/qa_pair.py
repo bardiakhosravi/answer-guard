@@ -50,12 +50,22 @@ class QAPair:
         if not source_system_id or not source_system_id.strip():
             raise DomainException("QAPair: source_system_id must not be empty")
 
+        pair_id = QAPairId.generate()
+        # Dedup on source row identity, not content:
+        # - external_id present → collides on re-import of the same source row
+        # - no external_id       → unique per call (uses the fresh internal UUID),
+        #                          so every capture/row is stored
+        if external_id and external_id.strip():
+            source_hash = SourceHash.for_external_id(source_system_id, external_id.strip())
+        else:
+            source_hash = SourceHash.for_internal_id(pair_id.value)
+
         return cls(
-            id=QAPairId.generate(),
+            id=pair_id,
             question_text=question_text,
             answer_text=answer_text,
             source_system_id=source_system_id,
-            source_hash=SourceHash.compute(question_text, answer_text, source_system_id),
+            source_hash=source_hash,
             ingestion_method=ingestion_method,
             captured_at=datetime.now(timezone.utc),
             source_timestamp=source_timestamp,

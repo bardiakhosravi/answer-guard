@@ -9,7 +9,12 @@ services:
       - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS:-}
       - BIGQUERY_PAGE_SIZE=${BIGQUERY_PAGE_SIZE:-5000}
     volumes:
-      - ${GOOGLE_APPLICATION_CREDENTIALS:-/dev/null}:/secrets/gcp-key.json:ro
+      # Mount the host home directory read-only so absolute paths to GCP
+      # credential files (e.g. /Users/<you>/key.json) resolve identically
+      # inside the container. Safe for local dev because (a) it's read-only
+      # and (b) the backend only reads files whose paths the user explicitly
+      # enters in the UI.
+      - ${HOME}:${HOME}:ro
     depends_on:
       db:
         condition: service_healthy

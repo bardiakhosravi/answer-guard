@@ -47,13 +47,27 @@ class BigQuerySourceAdapter(BigQuerySourcePort):
         except Exception as exc:
             raise AdapterException(f"BigQuery read failed: {exc}") from exc
 
-    def get_schema(self, connector: "SourceConnector") -> list[str]:
+    def get_schema(self, connector: "SourceConnector") -> list[dict]:
         try:
             client = self._get_client(connector)
             table_ref = f"{connector.gcp_project_id}.{connector.dataset_id}.{connector.table_id}"
             table = client.get_table(table_ref)
-            return [field.name for field in table.schema]
+            return [{"name": field.name, "type": field.field_type} for field in table.schema]
         except AdapterException:
             raise
         except Exception as exc:
             raise AdapterException(f"BigQuery get_schema failed: {exc}") from exc
+
+    def validate_row_filter(self, connector: "SourceConnector", row_filter: str) -> None:
+        try:
+            from google.cloud import bigquery
+
+            client = self._get_client(connector)
+            table_ref = f"`{connector.gcp_project_id}.{connector.dataset_id}.{connector.table_id}`"
+            query = f"SELECT 1 FROM {table_ref} WHERE {row_filter} LIMIT 0"
+            job_config = bigquery.QueryJobConfig(dry_run=True, use_query_cache=False)
+            client.query(query, job_config=job_config)
+        except AdapterException:
+            raise
+        except Exception as exc:
+            raise AdapterException(f"Invalid row filter: {exc}") from exc

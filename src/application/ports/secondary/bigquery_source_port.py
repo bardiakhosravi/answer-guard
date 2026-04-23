@@ -15,5 +15,16 @@ class BigQuerySourcePort(ABC):
         """Stream rows from the BigQuery source table as dicts, starting at start_index."""
 
     @abstractmethod
-    def get_schema(self, connector: "SourceConnector") -> list[str]:
-        """Return column names for the source table."""
+    def get_schema(self, connector: "SourceConnector") -> list[dict]:
+        """
+        Return column metadata for the source table as a list of dicts:
+        [{"name": "...", "type": "..."}, ...].
+        """
+
+    @abstractmethod
+    def validate_row_filter(self, connector: "SourceConnector", row_filter: str) -> None:
+        """
+        Validate that the given row filter is a syntactically valid BigQuery
+        WHERE clause for the given table. Raises AdapterException with the raw
+        BigQuery error message on failure. Does not return any data.
+        """

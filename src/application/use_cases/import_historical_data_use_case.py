@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from src.adapters.exceptions import AdapterException
 from src.application.commands.import_historical_data_command import ImportHistoricalDataCommand
+from src.application.ports.primary.discover_schema_port import InvalidRowFilterError
 from src.application.ports.primary.import_historical_data_port import (
     FieldMappingValidationError,
     ImportAlreadyRunningError,
@@ -32,7 +34,8 @@ class ImportHistoricalDataUseCase(ImportHistoricalDataPort):
         connector = command.source_connector
 
         # 1. Validate field mapping against actual source schema
-        available_columns = self._bq.get_schema(connector)
+        schema = self._bq.get_schema(connector)
+        available_columns = [col["name"] for col in schema]
         fm = connector.field_mapping
         for col_name, col_value in [
             ("question_column", fm.question_column),
@@ -48,6 +51,14 @@ class ImportHistoricalDataUseCase(ImportHistoricalDataPort):
                 f"Column '{fm.timestamp_column}' (timestamp_column) not found. "
                 f"Available: {available_columns}"
             )
+
+        # 1b. Validate the row filter (if any) up front — catches syntax errors
+        # before we create an IngestionRun or start streaming.
+        if connector.row_filter and connector.row_filter.strip():
+            try:
+                self._bq.validate_row_filter(connector, connector.row_filter.strip())
+            except AdapterException as exc:
+                raise InvalidRowFilterError(str(exc)) from exc
 
         # 2. Check for conflicting active runs; resume from FAILED if one exists
         active_run = self._run_repo.find_active_for_source(connector.source_system_id)

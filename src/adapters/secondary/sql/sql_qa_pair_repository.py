@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from src.adapters.secondary.sql.models.qa_pair_model import QAPairModel
@@ -74,20 +74,46 @@ class SqlQAPairRepository(QAPairRepository):
         ).scalar_one()
         return result or 0
 
-    def _to_model(self, qa_pair: QAPair) -> QAPairModel:
-        return QAPairModel(
-            id=qa_pair.id.value,
-            question_text=qa_pair.question_text,
-            answer_text=qa_pair.answer_text,
-            captured_at=qa_pair.captured_at,
-            source_timestamp=qa_pair.source_timestamp,
-            source_system_id=qa_pair.source_system_id,
-            external_id=qa_pair.external_id,
-            source_hash=qa_pair.source_hash.value,
-            ingestion_method=qa_pair.ingestion_method.value,
-            ingestion_run_id=qa_pair.ingestion_run_id,
-            metadata_=qa_pair.metadata or None,
+    def list_paginated(
+        self,
+        page: int,
+        page_size: int,
+        source_system_id: str | None = None,
+        search: str | None = None,
+    ) -> tuple[list[QAPair], int]:
+        if page < 1:
+            page = 1
+        if page_size < 1:
+            page_size = 50
+
+        filters = []
+        if source_system_id:
+            filters.append(QAPairModel.source_system_id == source_system_id)
+        if search:
+            pattern = f"%{search}%"
+            filters.append(
+                or_(
+                    QAPairModel.question_text.ilike(pattern),
+                    QAPairModel.answer_text.ilike(pattern),
+                )
+            )
+
+        total = self._session.execute(
+            select(func.count()).select_from(QAPairModel).where(*filters)
+        ).scalar_one() or 0
+
+        models = (
+            self._session.execute(
+                select(QAPairModel)
+                .where(*filters)
+                .order_by(QAPairModel.captured_at.desc())
+                .offset((page - 1) * page_size)
+                .limit(page_size)
+            )
+            .scalars()
+            .all()
         )
+        return [self._to_domain(m) for m in models], total
 
     def _to_domain(self, model: QAPairModel) -> QAPair:
         return QAPair(

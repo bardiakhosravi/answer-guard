@@ -6,8 +6,10 @@ from src.adapters.secondary.bigquery.bigquery_source_adapter import BigQuerySour
 from src.adapters.secondary.sql.sql_ingestion_run_repository import SqlIngestionRunRepository
 from src.adapters.secondary.sql.sql_qa_pair_repository import SqlQAPairRepository
 from src.application.use_cases.capture_runtime_response_use_case import CaptureRuntimeResponseUseCase
+from src.application.use_cases.discover_schema_use_case import DiscoverSchemaUseCase
 from src.application.use_cases.get_ingestion_status_use_case import GetIngestionStatusUseCase
 from src.application.use_cases.import_historical_data_use_case import ImportHistoricalDataUseCase
+from src.application.use_cases.list_qa_pairs_use_case import ListQAPairsUseCase
 from src.configuration.app_settings import AppSettings
 from src.configuration.database_config import DatabaseConfig
 
@@ -47,3 +49,10 @@ class DIContainer:
             qa_pair_repository=SqlQAPairRepository(session),
             ingestion_run_repository=SqlIngestionRunRepository(session),
         )
+
+    def discover_schema_use_case(self) -> DiscoverSchemaUseCase:
+        return DiscoverSchemaUseCase(bigquery_source=self.bigquery_source_adapter())
+
+    def list_qa_pairs_use_case(self) -> ListQAPairsUseCase:
+        session: Session = self._db_config.get_session()
+        return ListQAPairsUseCase(qa_pair_repository=SqlQAPairRepository(session))

@@ -6,6 +6,12 @@ const sidebars: SidebarsConfig = {
     { type: 'doc', id: 'quickstart', label: 'Quickstart' },
     {
       type: 'category',
+      label: 'Desktop App',
+      collapsed: false,
+      items: ['desktop/index'],
+    },
+    {
+      type: 'category',
       label: 'Integration Guide',
       collapsed: false,
       items: [

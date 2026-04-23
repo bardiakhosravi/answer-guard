@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from src.adapters.secondary.sql.models.ingestion_run_model import IngestionRunModel
@@ -55,10 +55,13 @@ class SqlIngestionRunRepository(IngestionRunRepository):
         return self._to_domain(model) if model else None
 
     def find_latest_per_source(self) -> list[IngestionRun]:
+        # Subquery: for each source, find the maximum started_at.
+        # Must use an aggregate function (not a raw column) to satisfy Postgres's
+        # stricter GROUP BY rules. SQLite also accepts this syntax.
         subq = (
             select(
                 IngestionRunModel.source_system_id,
-                IngestionRunModel.started_at.label("max_started"),
+                func.max(IngestionRunModel.started_at).label("max_started"),
             )
             .group_by(IngestionRunModel.source_system_id)
             .subquery()

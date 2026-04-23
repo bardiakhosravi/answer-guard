@@ -53,5 +53,11 @@ website/build/
 website/.docusaurus/
 website/.cache-loader/
 
+# Tauri desktop app
+desktop/node_modules/
+desktop/dist/
+desktop/src-tauri/target/
+desktop/src-tauri/gen/
+
 # Logs
 *.log
