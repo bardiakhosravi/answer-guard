@@ -14,6 +14,7 @@ if config.config_file_name is not None:
 # Import all models so autogenerate sees them
 import src.adapters.secondary.sql.models.qa_pair_model  # noqa: F401, E402
 import src.adapters.secondary.sql.models.ingestion_run_model  # noqa: F401, E402
+import src.adapters.secondary.sql.models.response_feedback_model  # noqa: F401, E402
 
 target_metadata = Base.metadata
 

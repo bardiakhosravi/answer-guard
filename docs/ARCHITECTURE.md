@@ -1,8 +1,18 @@
 # AnswerGuard — High-Level Technical Architecture
 
 **Status:** Draft
-**Date:** 2026-04-09
+**Date:** 2026-04-09 (updated 2026-04-23)
 **Related:** [PRD.md](./PRD.md)
+
+---
+
+## 0. Bounded Context — Agent Governance
+
+AnswerGuard is a single bounded context: **Agent Governance**. Its purpose is to guard against bad agent responses reaching users by capturing responses, letting PMs author guidelines about them, and (in a future feature) enforcing those guidelines at runtime.
+
+Everything in the domain layer — `QAPair`, `IngestionRun`, `Guideline`, future `GuidelineViolation` / `EnforcementAction` — are aggregates within this one context. Earlier versions of this document framed "Ingestion" as a separate context; that was over-modeling. Ingestion is a *mechanism* by which the Governance context learns about the responses it needs to govern, not a domain of its own.
+
+If we later add features that genuinely belong to a different ubiquitous language (e.g. billing, or a separate team-collaboration domain), we'll split at that point.
 
 ---
 

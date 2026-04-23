@@ -30,6 +30,8 @@ You need a running AnswerGuard backend the app can talk to. Follow the [Quicksta
    - **Review** — confirm the full configuration before saving.
 3. **Run the import.** On the Import screen you can optionally apply a BigQuery `WHERE` clause (row filter) to limit which rows are imported. Click *Start Import* and watch the live progress — records processed, records skipped, elapsed time, and the last checkpoint.
 4. **Browse your data.** Once the import completes, the Data screen shows every ingested Q&A pair in a paginated, searchable list with a detail panel. A separate "Skipped during last import" tab surfaces rows that were rejected (e.g. missing question text).
+5. **Capture feedback on an answer.** In any Q&A detail view, the Answer section supports text selection. Highlight a passage and click **Improve selected**, or use **Improve whole response** for feedback on the whole answer. A modal collects the problem and desired behavior; on save the feedback is stored as a standalone record.
+6. **Review feedback.** The **Response Feedback** screen (left sidebar) lists every captured feedback record across the product. Full-text search covers the excerpt, problem, and desired-behavior fields. Each row's detail view includes a **View source record →** link back to the original Q&A, and **Edit** / **Delete** actions. See [Response feedback →](/docs/governance/response-feedback) for the data model and API.
 
 ## What gets stored where
 

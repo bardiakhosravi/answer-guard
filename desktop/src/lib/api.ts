@@ -3,7 +3,11 @@ import type {
   ImportJob,
   OverallStatus,
   QAPairsPage,
+  ResponseFeedback,
+  ResponseFeedbackPageResult,
   SourceConnectorConfig,
+  SubmitResponseFeedbackInput,
+  UpdateResponseFeedbackInput,
 } from "../types";
 import { getServerConfig } from "./store";
 
@@ -169,6 +173,97 @@ export interface ListQAPairsParams {
   pageSize?: number;
   sourceSystemId?: string;
   search?: string;
+}
+
+function responseFeedbackFromWire(p: any): ResponseFeedback {
+  return {
+    id: p.id,
+    sourceQaPairId: p.source_qa_pair_id,
+    excerpt: p.excerpt,
+    spanStart: p.span_start ?? null,
+    spanEnd: p.span_end ?? null,
+    problem: p.problem,
+    desiredBehavior: p.desired_behavior,
+    createdAt: p.created_at,
+    updatedAt: p.updated_at,
+  };
+}
+
+export async function submitResponseFeedback(
+  input: SubmitResponseFeedbackInput,
+): Promise<ResponseFeedback> {
+  const body = await request<any>("/v1/response-feedback", {
+    method: "POST",
+    body: JSON.stringify({
+      source_qa_pair_id: input.sourceQaPairId,
+      excerpt: input.excerpt,
+      problem: input.problem,
+      desired_behavior: input.desiredBehavior,
+      span_start: input.spanStart ?? null,
+      span_end: input.spanEnd ?? null,
+    }),
+  });
+  return responseFeedbackFromWire(body);
+}
+
+export interface ListResponseFeedbackParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+}
+
+export async function listResponseFeedback(
+  params: ListResponseFeedbackParams = {},
+): Promise<ResponseFeedbackPageResult> {
+  const query = new URLSearchParams();
+  if (params.page) query.set("page", String(params.page));
+  if (params.pageSize) query.set("page_size", String(params.pageSize));
+  if (params.search) query.set("search", params.search);
+
+  const body = await request<any>(`/v1/response-feedback?${query.toString()}`);
+  return {
+    total: body.total,
+    page: body.page,
+    pageSize: body.page_size,
+    items: (body.items ?? []).map(responseFeedbackFromWire),
+  };
+}
+
+export async function getResponseFeedback(id: string): Promise<ResponseFeedback> {
+  const body = await request<any>(`/v1/response-feedback/${id}`);
+  return responseFeedbackFromWire(body);
+}
+
+export async function updateResponseFeedback(
+  id: string,
+  input: UpdateResponseFeedbackInput,
+): Promise<ResponseFeedback> {
+  const payload: Record<string, string> = {};
+  if (input.problem !== undefined) payload.problem = input.problem;
+  if (input.desiredBehavior !== undefined) payload.desired_behavior = input.desiredBehavior;
+
+  const body = await request<any>(`/v1/response-feedback/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+  return responseFeedbackFromWire(body);
+}
+
+export async function deleteResponseFeedback(id: string): Promise<void> {
+  const base = await getBaseUrl();
+  const response = await fetch(`${base}/v1/response-feedback/${id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!response.ok && response.status !== 204) {
+    let detail: unknown;
+    try {
+      detail = await response.json();
+    } catch {
+      detail = await response.text();
+    }
+    throw new ApiError(response.status, `${response.status} ${response.statusText}`, detail);
+  }
 }
 
 export async function listQAPairs(params: ListQAPairsParams = {}): Promise<QAPairsPage> {

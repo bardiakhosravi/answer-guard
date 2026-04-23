@@ -8,6 +8,7 @@ from src.adapters.primary.web import (
     capture_router,
     ingestion_router,
     qa_pairs_router,
+    response_feedback_router,
     sources_router,
 )
 from src.application.ports.primary.capture_runtime_response_port import (
@@ -45,6 +46,21 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     app.dependency_overrides[qa_pairs_router._get_list_qa_pairs_use_case] = (
         container.list_qa_pairs_use_case
     )
+    app.dependency_overrides[response_feedback_router._get_submit_use_case] = (
+        container.submit_response_feedback_use_case
+    )
+    app.dependency_overrides[response_feedback_router._get_list_use_case] = (
+        container.list_response_feedback_use_case
+    )
+    app.dependency_overrides[response_feedback_router._get_get_use_case] = (
+        container.get_response_feedback_use_case
+    )
+    app.dependency_overrides[response_feedback_router._get_update_use_case] = (
+        container.update_response_feedback_use_case
+    )
+    app.dependency_overrides[response_feedback_router._get_delete_use_case] = (
+        container.delete_response_feedback_use_case
+    )
 
     yield
 
@@ -75,3 +91,4 @@ app.include_router(ingestion_router.router, prefix="/v1")
 app.include_router(capture_router.router, prefix="/v1")
 app.include_router(sources_router.router, prefix="/v1")
 app.include_router(qa_pairs_router.router, prefix="/v1")
+app.include_router(response_feedback_router.router, prefix="/v1")

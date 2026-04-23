@@ -1,7 +1,9 @@
 # Data Model: Q&A Response Ingestion & Storage
 
 **Feature**: 001-qa-response-ingestion
-**Date**: 2026-04-21
+**Date**: 2026-04-21 (bounded-context note added 2026-04-23)
+
+> **Bounded context note**: The `QAPair` and `IngestionRun` aggregates documented below are part of the **Agent Governance** bounded context, AnswerGuard's single domain. Earlier framing treated "Ingestion" as its own context; that was corrected in feature 004. Ingestion is a mechanism for bringing observed agent responses into the Governance domain, not a domain of its own. See `specs/004-response-improvement/research.md` Decision 1 for the full rationale.
 
 ---
 
