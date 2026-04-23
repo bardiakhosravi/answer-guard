@@ -199,6 +199,143 @@ Capture a single Q&A pair at runtime. Used by the SDK internally and available d
 
 ---
 
+## POST /v1/response-feedback
+
+Submit PM feedback about an agent answer.
+
+### Request body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `source_qa_pair_id` | string (UUID) | ✅ | ID of the source `QAPair` the feedback is about |
+| `excerpt` | string | ✅ | The text the PM was commenting on — either the selected passage or the full answer |
+| `problem` | string | ✅ | What's wrong with the response |
+| `desired_behavior` | string | ✅ | How the agent should behave instead |
+| `span_start` | integer | ❌ | Character offset where the highlight begins (both `span_start` and `span_end` must be provided together, or both omitted) |
+| `span_end` | integer | ❌ | Character offset where the highlight ends (exclusive) |
+
+### Example request
+
+```json
+{
+  "source_qa_pair_id": "b2c3d4e5-6789-4abc-8def-0123456789ab",
+  "excerpt": "To request a refund, go to Settings > Billing.",
+  "problem": "The response is too vague — it doesn't mention that refunds are only available within 30 days.",
+  "desired_behavior": "Always include the 30-day refund policy window when discussing refunds.",
+  "span_start": 0,
+  "span_end": 47
+}
+```
+
+### Response — 201 Created
+
+```json
+{
+  "id": "f1e2d3c4-...",
+  "source_qa_pair_id": "b2c3d4e5-...",
+  "excerpt": "To request a refund, go to Settings > Billing.",
+  "span_start": 0,
+  "span_end": 47,
+  "problem": "The response is too vague...",
+  "desired_behavior": "Always include the 30-day refund policy...",
+  "created_at": "2026-04-23T14:00:00Z",
+  "updated_at": "2026-04-23T14:00:00Z"
+}
+```
+
+### Error responses
+
+| Status | When |
+|--------|------|
+| `400` | Empty required field; one-sided span (only `span_start` or `span_end` provided) |
+
+---
+
+## GET /v1/response-feedback
+
+List all response feedback records, paginated. Ordered by `created_at` descending.
+
+### Query parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `page` | integer | `1` | Page number (1-indexed) |
+| `page_size` | integer | `50` | Records per page (max `500`) |
+| `search` | string | none | Case-insensitive search across `excerpt`, `problem`, and `desired_behavior` |
+
+### Response — 200 OK
+
+```json
+{
+  "total": 342,
+  "page": 1,
+  "page_size": 50,
+  "items": [
+    {
+      "id": "f1e2d3c4-...",
+      "source_qa_pair_id": "b2c3d4e5-...",
+      "excerpt": "...",
+      "span_start": 0,
+      "span_end": 47,
+      "problem": "...",
+      "desired_behavior": "...",
+      "created_at": "2026-04-23T14:00:00Z",
+      "updated_at": "2026-04-23T14:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+## GET /v1/response-feedback/:feedback_id
+
+Retrieve a single feedback record.
+
+### Response — 200 OK
+
+Same shape as items in the list response above.
+
+### Error responses
+
+| Status | When |
+|--------|------|
+| `404` | No record with the given ID |
+
+---
+
+## PATCH /v1/response-feedback/:feedback_id
+
+Update `problem` and/or `desired_behavior` on an existing feedback record. Excerpt and span are immutable.
+
+### Request body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `problem` | string | ❌ | New problem text. At least one of `problem` or `desired_behavior` must be provided |
+| `desired_behavior` | string | ❌ | New desired-behavior text |
+
+### Response — 200 OK
+
+The updated record (same shape as GET).
+
+### Error responses
+
+| Status | When |
+|--------|------|
+| `400` | Both fields omitted; empty value supplied |
+| `404` | No record with the given ID |
+
+---
+
+## DELETE /v1/response-feedback/:feedback_id
+
+Idempotent delete. Returns 204 whether or not the record existed.
+
+### Response — 204 No Content
+
+---
+
 ## GET /health
 
 Health check.

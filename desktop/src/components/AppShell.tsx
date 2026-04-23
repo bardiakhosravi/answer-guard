@@ -61,6 +61,7 @@ export default function AppShell() {
           <SidebarLink to="/connector" label="Source Setup" enabled={state.connected} />
           <SidebarLink to="/import" label="Import" enabled={state.hasSourceConfig} />
           <SidebarLink to="/data" label="Data" enabled={state.hasCompletedImport} />
+          <SidebarLink to="/response-feedback" label="Response Feedback" enabled={state.connected} />
         </nav>
       </aside>
       <main className="flex-1 overflow-auto bg-white">

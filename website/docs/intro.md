@@ -28,8 +28,9 @@ Your agent system ──► AnswerGuard ──► PM Review Interface
 ```
 
 1. **Ingest** — AnswerGuard captures Q&A pairs from your agent system, either by importing historical data from BigQuery or capturing new responses at runtime via SDK.
-2. **Review** — PMs browse responses in the AnswerGuard interface, highlight problem passages, and create enforceable guidelines.
-3. **Enforce** — The adherence engine applies those guidelines to future responses before they reach users.
+2. **Review** — PMs browse responses in the AnswerGuard interface.
+3. **Capture feedback** — PMs highlight problem passages (or flag the whole response), describe what's wrong, and describe how the agent should behave instead. Each piece of feedback is stored as a standalone record that references the source Q&A for provenance. See [Response feedback →](/docs/governance/response-feedback).
+4. **Enforce** — A future adherence engine will use captured feedback to improve responses before they reach users (not yet implemented).
 
 ## Next steps
 

@@ -6,6 +6,7 @@ import SchemaScreen from "./screens/connector/SchemaScreen";
 import ReviewScreen from "./screens/connector/ReviewScreen";
 import ImportScreen from "./screens/ImportScreen";
 import DataScreen from "./screens/DataScreen";
+import ResponseFeedbackScreen from "./screens/ResponseFeedbackScreen";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/connector/review" element={<ReviewScreen />} />
         <Route path="/import" element={<ImportScreen />} />
         <Route path="/data" element={<DataScreen />} />
+        <Route path="/response-feedback" element={<ResponseFeedbackScreen />} />
         <Route path="*" element={<Navigate to="/connector/details" replace />} />
       </Route>
     </Routes>

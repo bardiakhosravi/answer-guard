@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import { getImportStatus, getOverallStatus, listQAPairs } from "../lib/api";
 import { getLastImportRunId, getSourceConnectorConfig } from "../lib/store";
 import QAPairList from "../components/QAPairList";
@@ -9,11 +10,15 @@ import type { QAPairRecord } from "../types";
 type Tab = "all" | "skipped";
 
 export default function DataScreen() {
+  const location = useLocation();
+  const incomingQAPairId =
+    (location.state as { openQAPairId?: string } | null)?.openQAPairId ?? null;
+
   const [tab, setTab] = useState<Tab>("all");
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(incomingQAPairId);
   const [sourceSystemId, setSourceSystemId] = useState<string | undefined>(undefined);
   const [lastImportRunId, setLastImportRunId] = useState<string | null>(null);
 

@@ -64,6 +64,39 @@ export interface QAPairsPage {
   items: QAPairRecord[];
 }
 
+export interface ResponseFeedback {
+  id: string;
+  sourceQaPairId: string;
+  excerpt: string;
+  spanStart: number | null;
+  spanEnd: number | null;
+  problem: string;
+  desiredBehavior: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ResponseFeedbackPageResult {
+  total: number;
+  page: number;
+  pageSize: number;
+  items: ResponseFeedback[];
+}
+
+export interface SubmitResponseFeedbackInput {
+  sourceQaPairId: string;
+  excerpt: string;
+  problem: string;
+  desiredBehavior: string;
+  spanStart?: number | null;
+  spanEnd?: number | null;
+}
+
+export interface UpdateResponseFeedbackInput {
+  problem?: string;
+  desiredBehavior?: string;
+}
+
 export interface OverallStatus {
   totalQaPairs: number;
   sources: {

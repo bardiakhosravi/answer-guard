@@ -25,6 +25,12 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Governance',
+      collapsed: false,
+      items: ['governance/response-feedback'],
+    },
+    {
+      type: 'category',
       label: 'Reference',
       collapsed: false,
       items: [
