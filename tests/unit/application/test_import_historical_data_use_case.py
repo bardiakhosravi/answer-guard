@@ -36,7 +36,7 @@ def _make_use_case(bq=None, qa_repo=None, run_repo=None):
 
 def test_invalid_field_mapping_raises_before_run_starts():
     use_case, bq, qa_repo, run_repo = _make_use_case()
-    bq.get_schema.return_value = ["other_col"]
+    bq.get_schema.return_value = [{"name": "other_col", "type": "STRING"}]
 
     with pytest.raises(FieldMappingValidationError):
         use_case.execute(ImportHistoricalDataCommand(_make_connector()))
@@ -46,7 +46,7 @@ def test_invalid_field_mapping_raises_before_run_starts():
 
 def test_import_already_running_raises():
     use_case, bq, qa_repo, run_repo = _make_use_case()
-    bq.get_schema.return_value = ["question", "answer"]
+    bq.get_schema.return_value = [{"name": "question", "type": "STRING"}, {"name": "answer", "type": "STRING"}]
     running_run = IngestionRun.start("sys-1", {"source_system_id": "sys-1"})
     run_repo.find_active_for_source.return_value = running_run
 
@@ -56,7 +56,7 @@ def test_import_already_running_raises():
 
 def test_successful_import_completes_run():
     use_case, bq, qa_repo, run_repo = _make_use_case()
-    bq.get_schema.return_value = ["question", "answer"]
+    bq.get_schema.return_value = [{"name": "question", "type": "STRING"}, {"name": "answer", "type": "STRING"}]
     bq.read_rows.return_value = iter([
         {"question": "Q1", "answer": "A1"},
         {"question": "Q2", "answer": "A2"},
@@ -71,7 +71,7 @@ def test_successful_import_completes_run():
 
 def test_duplicate_rows_counted_as_skipped():
     use_case, bq, qa_repo, run_repo = _make_use_case()
-    bq.get_schema.return_value = ["question", "answer"]
+    bq.get_schema.return_value = [{"name": "question", "type": "STRING"}, {"name": "answer", "type": "STRING"}]
     bq.read_rows.return_value = iter([
         {"question": "Q1", "answer": "A1"},
     ])
@@ -84,7 +84,7 @@ def test_duplicate_rows_counted_as_skipped():
 
 def test_mid_run_exception_fails_run():
     use_case, bq, qa_repo, run_repo = _make_use_case()
-    bq.get_schema.return_value = ["question", "answer"]
+    bq.get_schema.return_value = [{"name": "question", "type": "STRING"}, {"name": "answer", "type": "STRING"}]
     bq.read_rows.side_effect = RuntimeError("network down")
 
     with pytest.raises(RuntimeError):
@@ -96,7 +96,7 @@ def test_mid_run_exception_fails_run():
 
 def test_resume_from_failed_run():
     use_case, bq, qa_repo, run_repo = _make_use_case()
-    bq.get_schema.return_value = ["question", "answer"]
+    bq.get_schema.return_value = [{"name": "question", "type": "STRING"}, {"name": "answer", "type": "STRING"}]
     bq.read_rows.return_value = iter([])
 
     failed_run = IngestionRun.start("sys-1", {"source_system_id": "sys-1"})

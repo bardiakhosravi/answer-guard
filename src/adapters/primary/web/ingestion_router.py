@@ -10,6 +10,7 @@ from src.application.ports.primary.get_ingestion_status_port import (
     IngestionRunNotFoundError,
     IngestionStatusResponse,
 )
+from src.application.ports.primary.discover_schema_port import InvalidRowFilterError
 from src.application.ports.primary.import_historical_data_port import (
     FieldMappingValidationError,
     ImportAlreadyRunningError,
@@ -101,6 +102,11 @@ def trigger_import(
             ingestion_run_id=result.ingestion_run_id,
             status=result.status,
             message=result.message,
+        )
+    except InvalidRowFilterError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "INVALID_ROW_FILTER", "field": "row_filter", "detail": str(exc)},
         )
     except FieldMappingValidationError as exc:
         raise HTTPException(status_code=400, detail={"error": "INVALID_FIELD_MAPPING", "detail": str(exc)})
